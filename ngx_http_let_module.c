@@ -149,6 +149,42 @@ static ngx_int_t ngx_let_func_length(ngx_http_request_t *r,
     return NGX_OK;
 }
 
+static ngx_int_t ngx_let_func_lower(ngx_http_request_t *r,
+        ngx_str_t *str, ngx_str_t *ret)
+{
+    ngx_uint_t i;
+
+    ret->len = str->len;
+    ret->data = ngx_palloc(r->pool, ret->len);
+    if (ret->data == NULL) {
+        return NGX_ERROR;
+    }
+
+    for (i = 0; i < str->len; i++) {
+        ret->data[i] = ngx_tolower(str->data[i]);
+    }
+
+    return NGX_OK;
+}
+
+static ngx_int_t ngx_let_func_upper(ngx_http_request_t *r,
+        ngx_str_t *str, ngx_str_t *ret)
+{
+    ngx_uint_t i;
+
+    ret->len = str->len;
+    ret->data = ngx_palloc(r->pool, ret->len);
+    if (ret->data == NULL) {
+        return NGX_ERROR;
+    }
+
+    for (i = 0; i < str->len; i++) {
+        ret->data[i] = ngx_toupper(str->data[i]);
+    }
+
+    return NGX_OK;
+}
+
 #define NGX_LET_ICMPFUNC(name, op) \
 static ngx_int_t ngx_let_func_##name(ngx_http_request_t *r, \
         ngx_str_t *a1, ngx_str_t *a2, ngx_str_t *ret) \
@@ -249,6 +285,8 @@ static ngx_int_t ngx_let_call_fun(ngx_http_request_t *r,
 
     /* string operations */
     CALL_FUNC_1(length);
+    CALL_FUNC_1(lower);
+    CALL_FUNC_1(upper);
     CALL_FUNC_3(substr);
 
     /* integer operations */
