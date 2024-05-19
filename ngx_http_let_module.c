@@ -614,6 +614,94 @@ static ngx_int_t ngx_let_func_round(ngx_http_request_t *r,
     return NGX_OK;
 }
 
+static ngx_int_t ngx_let_func_base64_encode(ngx_http_request_t *r,
+        ngx_str_t *input, ngx_str_t *ret)
+{
+    ngx_str_t encoded;
+    size_t len;
+
+    len = ngx_base64_encoded_length(input->len);
+    encoded.data = ngx_palloc(r->pool, len);
+    if (encoded.data == NULL) {
+        return NGX_ERROR;
+    }
+
+    ngx_encode_base64(&encoded, input);
+
+    ret->len = encoded.len;
+    ret->data = encoded.data;
+
+    return NGX_OK;
+}
+
+static ngx_int_t ngx_let_func_base64_decode(ngx_http_request_t *r,
+        ngx_str_t *input, ngx_str_t *ret)
+{
+    ngx_str_t decoded;
+    size_t len;
+
+    len = ngx_base64_decoded_length(input->len);
+    decoded.data = ngx_palloc(r->pool, len);
+    if (decoded.data == NULL) {
+        return NGX_ERROR;
+    }
+
+    if (ngx_decode_base64(&decoded, input) != NGX_OK) {
+        ret->len = 0;
+        ret->data = (u_char *)"";
+        return NGX_OK;
+    }
+
+    ret->len = decoded.len;
+    ret->data = decoded.data;
+
+    return NGX_OK;
+}
+
+static ngx_int_t ngx_let_func_base64url_encode(ngx_http_request_t *r,
+        ngx_str_t *input, ngx_str_t *ret)
+{
+    ngx_str_t encoded;
+    size_t len;
+
+    len = ngx_base64_encoded_length(input->len);
+    encoded.data = ngx_palloc(r->pool, len);
+    if (encoded.data == NULL) {
+        return NGX_ERROR;
+    }
+
+    ngx_encode_base64url(&encoded, input);
+
+    ret->len = encoded.len;
+    ret->data = encoded.data;
+
+    return NGX_OK;
+}
+
+static ngx_int_t ngx_let_func_base64url_decode(ngx_http_request_t *r,
+        ngx_str_t *input, ngx_str_t *ret)
+{
+    ngx_str_t decoded;
+    size_t len;
+
+    len = ngx_base64_decoded_length(input->len);
+    decoded.data = ngx_palloc(r->pool, len);
+    if (decoded.data == NULL) {
+        return NGX_ERROR;
+    }
+
+    if (ngx_decode_base64url(&decoded, input) != NGX_OK) {
+        ret->len = 0;
+        ret->data = (u_char *)"";
+        return NGX_OK;
+    }
+
+    ret->len = decoded.len;
+    ret->data = decoded.data;
+
+    return NGX_OK;
+}
+
 /* Call function by name & return result */
 static ngx_int_t ngx_let_call_fun(ngx_http_request_t *r,
         ngx_str_t *name, ngx_array_t *args, ngx_str_t *value)
@@ -651,8 +739,6 @@ static ngx_int_t ngx_let_call_fun(ngx_http_request_t *r,
     IF_FUNC(nm, 3) \
         return ngx_let_func_##nm(r, sargs, sargs + 1, sargs + 2, value); \
     }
-    
-    CALL_FUNC_0(rand);
 
     /* cryptographic hashes */
     CALL_FUNC_1(md4);
@@ -678,9 +764,14 @@ static ngx_int_t ngx_let_call_fun(ngx_http_request_t *r,
     CALL_FUNC_2(repeat);
     CALL_FUNC_3(substr);
     CALL_FUNC_3(replace);
+    CALL_FUNC_1(base64_encode);
+    CALL_FUNC_1(base64_decode);
+    CALL_FUNC_1(base64url_encode);
+    CALL_FUNC_1(base64url_decode);
 
     /* integer operations */
-    CALL_FUNC_2(rand_int);
+    CALL_FUNC_0(rand);
+    CALL_FUNC_2(rand_range);
     CALL_FUNC_2(max);
     CALL_FUNC_2(min);
     CALL_FUNC_2(round);
