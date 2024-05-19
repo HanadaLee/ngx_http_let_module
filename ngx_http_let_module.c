@@ -420,7 +420,7 @@ static ngx_int_t ngx_let_func_reverse(ngx_http_request_t *r,
     return NGX_OK;
 }
 
-static ngx_int_t ngx_let_func_rand_int(ngx_http_request_t *r,
+static ngx_int_t ngx_let_func_rand_range(ngx_http_request_t *r,
         ngx_str_t *start_str, ngx_str_t *end_str,
         ngx_str_t *ret)
 {
@@ -429,7 +429,7 @@ static ngx_int_t ngx_let_func_rand_int(ngx_http_request_t *r,
     start = ngx_atoi(start_str->data, start_str->len);
     if (start == NGX_ERROR) {
         ngx_log_error(NGX_LOG_NOTICE, r->connection->log, 0,
-                      "rand_int: bad \"start\" argument: %V", start_str);
+                      "rand_range: bad \"start\" argument: %V", start_str);
         ret->len = 0;
         return NGX_OK;
     }
@@ -437,7 +437,7 @@ static ngx_int_t ngx_let_func_rand_int(ngx_http_request_t *r,
     end = ngx_atoi(end_str->data, end_str->len);
     if (end == NGX_ERROR) {
         ngx_log_error(NGX_LOG_NOTICE, r->connection->log, 0,
-                      "rand_int: bad \"end\" argument: %V", end_str);
+                      "rand_range: bad \"end\" argument: %V", end_str);
         ret->len = 0;
         return NGX_OK;
     }
