@@ -6,8 +6,6 @@ Adds support for arithmetic operations to NGINX config.
 
 (c) 2011 Roman Arutyunyan, arut@qip.ru
 
-
-
 Build:
 ======
 
@@ -16,21 +14,20 @@ Add this when configuring NGNIX:
 ./configure --add-module=$PATH_TO_MODULE
 
 
-
-
 Examples:
 =========
 
 # adds variable $value equal to evaluated expression value
 
-let $value ( $uid + 0x12 ) * $offset - 100 ;
+let $value ( $uid + 0x12 ) * $offset - 100;
 
-let $remainer $number % 100 ;
+let $remainer $number % 100;
 
 let $welcome "Hi, " . $user . ", you have " . $num . " data items";
-# echo $welcome ;
+# echo $welcome;
 
-let_rand $randval from to;
+let $rand_int rand_range( 5 8 );
+# echo $rand_int;
 
 
 IMPORTANT NOTE:
@@ -44,7 +41,10 @@ let $value ( 1 + 2 );         # OK
 let $value 1 + (2 * $uid);    # ERROR!
 let $value 1 + ( 2 * $uid );  # OK
 
+let $value rand_range(5 8);   # ERROR!
+let $value rand_range( 5 8 ); # OK
 
+All generated variables are not cacheable and will be recalculated each time they are used.
 
 Features supported:
 ===================
@@ -55,13 +55,51 @@ Features supported:
 
 - string operations:
 
-  . (concatenation)
+  . (concatenation) please note that expressions do not support nginx's regular variable interpolation, so string concatenation must be used.
 
 - hexadecimal numbers
 
+  0x12
+
 - grouping with parentheses
 
+  ( or )
 
+- function
+  
+  cryptographic hashes functions
+  md4( string )
+  md5( string )
+  sha1( string )
+  sha224( string )
+  sha256( string )
+  sha384( string )
+  sha512( string )
+  ripemd160( string )
+
+  string operations functions
+  len( string ) get the length of string
+  lower( string ) convert to lowercase
+  upper( string ) convert to uppercase
+  trim( string ) trim spaces or newlines before and after a string
+  ltrim( string ) trim spaces or newlines before a string
+  rtrim( string ) trim spaces or newlines after a string
+  reverse( string ) reverse string
+  position( string sub_str ) get the starting position of a substring in a string
+  repeat( string repeat_times ) repeat string multiple times
+  substr( string start len ) sub string, you need to specify the starting position and interception length
+  replace( string src_str dst_str ) replace string
+  base64_encode( string ) encode string to base64
+  base64_decode( string ) decode base64 string
+  base64url_encode( string ) encode string to base64url
+  base64url_decode( string ) decode base64url string
+
+  /* integer operations */
+  rand() generate random large numbers
+  rand_range( start_int end_int ) generate numbers within a specified range
+  max( int1 int2 ) returns the larger of two integers
+  min( int1 int2 ) returns the smaller of two integers
+  round( num ) reserves the specified decimal places for the number, performs rounding, and adds 0 when the original number has insufficient decimal places
 
 Notes:
 ======
