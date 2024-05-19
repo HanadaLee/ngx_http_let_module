@@ -675,6 +675,7 @@ static ngx_int_t ngx_let_call_fun(ngx_http_request_t *r,
     CALL_FUNC_1(rtrim);
     CALL_FUNC_1(reverse);
     CALL_FUNC_2(position);
+    CALL_FUNC_2(repeat);
     CALL_FUNC_3(substr);
     CALL_FUNC_3(replace);
 
